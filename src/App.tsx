@@ -1,25 +1,21 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import styled, { ThemeProvider } from "styled-components";
+import { ourTheme } from "./styles";
+
+interface IContainerProps {
+  floating: boolean;
+}
+
+const Container = styled.div<IContainerProps>`
+  background-color:${(props) => props.theme.bgColor}
+  color: ${(props) => props.theme.fontColor}
+  box-shadow: ${(props) => (props.floating ? "" : "")}
+`;
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ThemeProvider theme={ourTheme}>
+      <Container floating={true}>App</Container>
+    </ThemeProvider>
   );
 }
 
