@@ -1,3 +1,5 @@
+import React from "react";
+import { HashRouter as Router, Route } from "react-router-dom";
 import styled, { ThemeProvider } from "styled-components";
 import { ourTheme } from "./styles";
 
@@ -13,9 +15,19 @@ const Container = styled.div<IContainerProps>`
 
 function App() {
   return (
-    <ThemeProvider theme={ourTheme}>
-      <Container floating={true}>App</Container>
-    </ThemeProvider>
+    <Router>
+      <Route path="/"></Route>
+      <Route path="/potato">
+        <ThemeProvider theme={ourTheme}>
+          <Container floating={true}>Potato</Container>
+        </ThemeProvider>
+      </Route>
+      <Route path="/banana">
+        <ThemeProvider theme={ourTheme}>
+          <Container floating={true}>banana</Container>
+        </ThemeProvider>
+      </Route>
+    </Router>
   );
 }
 
