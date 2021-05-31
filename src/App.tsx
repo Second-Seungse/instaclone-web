@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import styled, { ThemeProvider } from "styled-components";
 import { ourTheme } from "./styles";
@@ -16,14 +17,18 @@ const Container = styled.div<IContainerProps>`
 `;
 
 const App = () => {
-  const isLoggedIn = true;
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   return (
     <Router>
       <Switch>
         <Route path="/" exact>
           <ThemeProvider theme={ourTheme}>
             <Container floating={true}>
-              {isLoggedIn ? <Home /> : <Login />}
+              {isLoggedIn ? (
+                <Home setIsLoggedIn={setIsLoggedIn} />
+              ) : (
+                <Login setIsLoggedIn={setIsLoggedIn} />
+              )}
             </Container>
           </ThemeProvider>
         </Route>
