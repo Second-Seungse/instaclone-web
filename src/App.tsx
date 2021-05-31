@@ -1,7 +1,9 @@
-import React from "react";
-import { HashRouter as Router, Route } from "react-router-dom";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import styled, { ThemeProvider } from "styled-components";
 import { ourTheme } from "./styles";
+import Home from "./screens/Home";
+import Login from "./screens/Login";
+import NotFound from "./screens/NotFound";
 
 interface IContainerProps {
   floating: boolean;
@@ -13,22 +15,24 @@ const Container = styled.div<IContainerProps>`
   box-shadow: ${(props) => (props.floating ? "" : "")}
 `;
 
-function App() {
+const App = () => {
+  const isLoggedIn = true;
   return (
     <Router>
-      <Route path="/"></Route>
-      <Route path="/potato">
-        <ThemeProvider theme={ourTheme}>
-          <Container floating={true}>Potato</Container>
-        </ThemeProvider>
-      </Route>
-      <Route path="/banana">
-        <ThemeProvider theme={ourTheme}>
-          <Container floating={true}>banana</Container>
-        </ThemeProvider>
-      </Route>
+      <Switch>
+        <Route path="/" exact>
+          <ThemeProvider theme={ourTheme}>
+            <Container floating={true}>
+              {isLoggedIn ? <Home /> : <Login />}
+            </Container>
+          </ThemeProvider>
+        </Route>
+        <Route>
+          <NotFound />
+        </Route>
+      </Switch>
     </Router>
   );
-}
+};
 
 export default App;
