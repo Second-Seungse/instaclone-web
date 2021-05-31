@@ -1,22 +1,11 @@
-import { useReactiveVar } from "@apollo/client";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
-import styled, { ThemeProvider } from "styled-components";
+import { useReactiveVar } from "@apollo/client";
+import { ThemeProvider } from "styled-components";
+import { darkModeVar, isLoggedInVar } from "./apollo";
+import { darkTheme, GlobalStyles, lightTheme } from "./styles";
 import Home from "./screens/Home";
 import Login from "./screens/Login";
 import NotFound from "./screens/NotFound";
-import { darkModeVar, isLoggedInVar } from "./apollo";
-import { darkTheme, GlobalStyles, lightTheme } from "./styles";
-
-
-/* interface IContainerProps {
-  floating: boolean;
-}
-
-const Container = styled.div<IContainerProps>`
-  background-color: ${(props) => props.theme.bgColor};
-  color: ${(props) => props.theme.fontColor};
-  box-shadow: ${(props) => (props.floating ? "" : "")};
-`; */
 
 const App = () => {
   const isLoggedIn = useReactiveVar(isLoggedInVar);
@@ -27,7 +16,6 @@ const App = () => {
       <Router>
         <Switch>
           <Route path="/" exact>
-            {/* <ThemeProvider theme={ourTheme}> */}
             {isLoggedIn ? <Home /> : <Login />}
           </Route>
           <Route>

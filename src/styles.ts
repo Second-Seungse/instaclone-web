@@ -1,18 +1,12 @@
-import { DefaultTheme } from "styled-components";
-import { createGlobalStyle } from "styled-components";
+import { createGlobalStyle, DefaultTheme } from "styled-components";
 import reset from "styled-reset";
 
-export const ourTheme: DefaultTheme = {
-  bgColor: "black",
-  fontColor: "blue",
-};
-
-export const lightTheme = {
+export const lightTheme: DefaultTheme = {
   fontColor: "#2c2c2c",
   bgColor: "lightgray",
 };
 
-export const darkTheme = {
+export const darkTheme: DefaultTheme = {
   fontColor: "lightgray",
   bgColor: "#2c2c2c",
 };
@@ -23,3 +17,13 @@ export const GlobalStyles = createGlobalStyle`
         background-color: ${(props) => props.theme.bgColor};
     }
 `;
+
+/* interface IContainerProps {
+  floating: boolean;
+}
+
+const Container = styled.div<IContainerProps>`
+  background-color: ${(props) => props.theme.bgColor};
+  color: ${(props) => props.theme.fontColor};
+  box-shadow: ${(props) => (props.floating ? "" : "")};
+`; */
