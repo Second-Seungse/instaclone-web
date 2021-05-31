@@ -12,9 +12,9 @@ interface IContainerProps {
 }
 
 const Container = styled.div<IContainerProps>`
-  background-color:${(props) => props.theme.bgColor}
-  color: ${(props) => props.theme.fontColor}
-  box-shadow: ${(props) => (props.floating ? "" : "")}
+  background-color: ${(props) => props.theme.bgColor};
+  color: ${(props) => props.theme.fontColor};
+  box-shadow: ${(props) => (props.floating ? "" : "")};
 `;
 
 const App = () => {
