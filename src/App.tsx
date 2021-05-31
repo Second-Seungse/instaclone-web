@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useReactiveVar } from "@apollo/client";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import styled, { ThemeProvider } from "styled-components";
 import { ourTheme } from "./styles";
 import Home from "./screens/Home";
 import Login from "./screens/Login";
 import NotFound from "./screens/NotFound";
+import { isLoggedInVar } from "./apollo";
 
 interface IContainerProps {
   floating: boolean;
@@ -17,18 +18,14 @@ const Container = styled.div<IContainerProps>`
 `;
 
 const App = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const isLoggedIn = useReactiveVar(isLoggedInVar);
   return (
     <Router>
       <Switch>
         <Route path="/" exact>
           <ThemeProvider theme={ourTheme}>
             <Container floating={true}>
-              {isLoggedIn ? (
-                <Home setIsLoggedIn={setIsLoggedIn} />
-              ) : (
-                <Login setIsLoggedIn={setIsLoggedIn} />
-              )}
+              {isLoggedIn ? <Home /> : <Login />}
             </Container>
           </ThemeProvider>
         </Route>
