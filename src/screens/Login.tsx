@@ -9,6 +9,7 @@ import AuthLayout from "../components/auth/AuthLayout";
 import BottomBox from "../components/auth/BottomBox";
 import Button from "../components/auth/Button";
 import FormBox from "../components/auth/FormBox";
+import FormError from "../components/auth/FormError";
 import Input from "../components/auth/Input";
 import Separator from "../components/auth/Separator";
 import PageTitle from "../components/pageTitle";
@@ -28,12 +29,15 @@ type LoginForm = {
 };
 
 const Login = () => {
-  const { register, handleSubmit, getValues, setValue } = useForm<LoginForm>();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isValid },
+  } = useForm<LoginForm>({
+    mode: "onBlur",
+  });
   const onSubmitValid: SubmitHandler<LoginForm> = (data) => {
     console.log(data);
-  };
-  const onSubmitInvalid: SubmitErrorHandler<LoginForm> = (data) => {
-    console.log(data, "invalid");
   };
   return (
     <AuthLayout>
@@ -42,20 +46,31 @@ const Login = () => {
         <div>
           <FontAwesomeIcon icon={faInstagram} size="3x" />
         </div>
-        <form onSubmit={handleSubmit(onSubmitValid, onSubmitInvalid)}>
+        <form onSubmit={handleSubmit(onSubmitValid)}>
           <Input
-            {...register("username", { minLength: 5, required: true })}
+            {...register("username", {
+              minLength: {
+                value: 5,
+                message: "Username should be longer than 5 chars.",
+              },
+              required: true,
+            })}
             name="username"
             type="text"
             placeholder="Username"
+            hasError={Boolean(errors?.username?.message)}
           />
+          <FormError message={errors?.username?.message} />
           <Input
             {...register("password", { required: true })}
             name="password"
             type="password"
             placeholder="Password"
+            
+            hasError={Boolean(errors?.password?.message)}
           />
-          <Button type="submit" value="Log in" />
+          <FormError message={errors?.password?.message} />
+          <Button type="submit" value="Log in" disabled={!isValid} />
         </form>
         <Separator />
         <FacebookLogin>
