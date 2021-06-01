@@ -1,8 +1,10 @@
 import "styled-components";
 
 declare module "styled-components" {
-  export interface DefaultTheme {
-    bgColor: string;
-    fontColor: string;
+  export interface IDefaultTheme {
+    bgColor?: string;
+    fontColor?: string;
+    borderColor?: String;
+    accent?: String;
   }
 }
