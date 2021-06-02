@@ -31,8 +31,6 @@ type LoginForm = {
   result: string;
 };
 
-type MutationForm = {};
-
 const LOGIN_MUTATION = gql`
   mutation login($username: String!, $password: String!) {
     login(username: $username, password: $password) {
