@@ -3,12 +3,14 @@ import reset from "styled-reset";
 
 export const lightTheme: IDefaultTheme = {
   accent: "#0095f6",
+  bgColor: "#FAFAFA",
+  fontColor: "rgb(38, 38, 38)",
   borderColor: "rgb(219, 219, 219)",
 };
 
 export const darkTheme: IDefaultTheme = {
   fontColor: "white",
-  bgColor: "#2c2c2c",
+  bgColor: "#000",
 };
 
 export const GlobalStyles = createGlobalStyle`
@@ -20,10 +22,10 @@ export const GlobalStyles = createGlobalStyle`
       box-sizing:border-box;
     }
     body {
-      background-color: #FAFAFA;
-        font-size:14px;
-        font-family:'Open Sans', sans-serif;
-        color:rgb(38, 38, 38);
+      background-color:${(props: any) => props.theme.bgColor};
+      font-size:14px;
+      font-family:'Open Sans', sans-serif;
+      color:${(props: any) => props.theme.fontColor};
     }
     a {
       text-decoration: none;
