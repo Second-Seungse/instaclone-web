@@ -12,6 +12,7 @@ import Input from "../components/auth/Input";
 import PageTitle from "../components/pageTitle";
 import { FatLink } from "../components/shared";
 import routes from "../routes";
+import { createAccount, createAccountVariables } from "../__generated__/createAccount";
 
 const HeaderContainer = styled.div`
   display: flex;
@@ -24,12 +25,6 @@ const Subtitle = styled(FatLink)`
   text-align: center;
   margin-top: 10px;
 `;
-
-type SignUpForm = {
-  username: string;
-  password: string;
-  result: string;
-};
 
 const CREATE_ACCOUNT_MUTATION = gql`
   mutation createAccount(
@@ -54,38 +49,41 @@ const CREATE_ACCOUNT_MUTATION = gql`
 
 const SignUp = () => {
   const history = useHistory();
-  const onCompleted = (data: any) => {
-    const { username, password } = getValues();
-    const {
-      createAccount: { ok },
-    } = data;
-    if (!ok) {
-      return;
+  const [createAccount, { loading }] = useMutation<createAccount>(
+    CREATE_ACCOUNT_MUTATION,
+    {
+      onCompleted: (data) => {
+        const {
+          createAccount: { ok },
+        } = data;
+        if (!ok) {
+          return;
+        }
+        history.push(routes.home, {
+          message: "Account created. Please log in.",
+          //username, password,
+        });
+      },
     }
-    history.push(routes.home, {
-      message: "Account created. Please log in.",
-      username,
-      password,
-    });
-  };
-  const [createAccount, { loading }] = useMutation(CREATE_ACCOUNT_MUTATION, {
-    onCompleted,
-  });
+  );
+  
   const {
     register,
     handleSubmit,
     getValues,
     formState: { isValid },
-  } = useForm({
+  } = useForm<createAccountVariables>({
     mode: "onChange",
   });
-  const onSubmitValid = (data: any) => {
+  const onSubmitValid = () => {
     if (loading) {
       return;
     }
+    let signUpValues: createAccountVariables = getValues();
+    console.log(signUpValues);
     createAccount({
       variables: {
-        ...data,
+        ...getValues(),
       },
     });
   };

@@ -4,7 +4,7 @@ import {
   faInstagram,
 } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { SubmitErrorHandler, SubmitHandler, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { useLocation } from "react-router";
 import styled, { css } from "styled-components";
 import { logUserIn } from "../apollo";
@@ -17,6 +17,7 @@ import Input from "../components/auth/Input";
 import Separator from "../components/auth/Separator";
 import PageTitle from "../components/pageTitle";
 import routes from "../routes";
+import { login, loginVariables } from "../__generated__/login";
 
 const FacebookLogin = styled.div`
   color: #385285;
@@ -25,6 +26,13 @@ const FacebookLogin = styled.div`
     font-weight: 600;
   }
 `;
+
+interface ILocationState {
+  from: {
+    pathname: string;
+  };
+  message: string;
+}
 
 type LoginForm = {
   username: string;
@@ -47,8 +55,8 @@ const LOGIN_MUTATION = gql`
 `;
 
 const Login = () => {
-  const location = useLocation<any>();
-  console.log(location);
+  const location = useLocation<ILocationState>();
+
   const {
     register,
     handleSubmit,
@@ -58,32 +66,26 @@ const Login = () => {
     formState: { errors, isValid },
   } = useForm<LoginForm>({
     mode: "onChange",
-    defaultValues: {
-      username: location?.state?.username || "",
-      password: location?.state?.password || "",
+    // defaultValues: {
+    //   username: location?.state?.username || "",
+    //   password: location?.state?.password || "",
+    // },
+  });
+
+  const [login, { loading }] = useMutation<login, loginVariables>(LOGIN_MUTATION, {
+    onCompleted: (data) => {
+      if (!data.login.ok) {
+        return setError("result", {
+          message: data.login.error,
+        });
+      }
+      if (data.login.token) {
+        logUserIn(data.login.token);
+      }
     },
   });
 
-  const onCompleted = (data: any) => {
-    console.log(data);
-    const {
-      login: { ok, error, token },
-    } = data;
-    if (!ok) {
-      return setError("result", {
-        message: error,
-      });
-    }
-    if (token) {
-      logUserIn(token);
-    }
-  };
-
-  const [login, { loading }] = useMutation(LOGIN_MUTATION, {
-    onCompleted,
-  });
-
-  const onSubmitValid: SubmitHandler<LoginForm> = (data) => {
+  const onSubmitValid = () => {
     if (loading) {
       return;
     }

@@ -33,6 +33,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "codegen": "apollo client:codegen src/__generated__ --target=typescript --outputFlat",
     "build": "react-scripts build"
   },
   "eslintConfig": {
