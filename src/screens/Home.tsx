@@ -3,7 +3,6 @@ import Photo from "../components/feed/Photo";
 import { seeFeed } from "../__generated__/seeFeed";
 import PageTitle from "../components/PageTitle";
 
-
 const FEED_QUERY = gql`
   query seeFeed {
     seeFeed {
@@ -15,7 +14,17 @@ const FEED_QUERY = gql`
       file
       caption
       likes
-      comments
+      comments {
+        id
+        user {
+          username
+          avatar
+        }
+        payload
+        isMine
+        createdAt
+      }
+      commentNumber
       createdAt
       isMine
       isLiked
