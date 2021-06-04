@@ -9,7 +9,6 @@ import { faHeart as SolidHeart } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import PropTypes from "prop-types";
 import styled, { ThemeProviderComponent } from "styled-components";
-import { FEED_QUERY } from "../../screens/Home";
 import Avatar from "../Avatar";
 import { FatText } from "../shared";
 
@@ -73,13 +72,31 @@ const Likes = styled(FatText)`
 `;
 
 const Photo = ({ id, user, file, isLiked, likes }) => {
-  // * 백엔드에서 query를 fetch하고, 변한 내용이 있다면 apollo가 cache를 update한다
-  const [toggleLikeMutation, { loading }] = useMutation(TOGGLE_LIKE_MUTATION, {
+  const updateToggleLike = (cache, result) => {
+    const {
+      data: {
+        toggleLike: { ok },
+      },
+    } = result;
+    if (ok) {
+      cache.writeFragment({
+        id: `Photo:${id}`,
+        fragment: gql`
+          fragment BSName on Photo {
+            isLiked
+          }
+        `,
+        data: {
+          isLiked: !isLiked,
+        },
+      });
+    }
+  };
+  const [toggleLikeMutation] = useMutation(TOGGLE_LIKE_MUTATION, {
     variables: {
       id,
     },
-    // * mutation을 실행하고 백엔드에 에러가 없다면 query를 다시 호출한다
-    refetchQueries: [{ query: FEED_QUERY }],
+    update: updateToggleLike,
   });
   return (
     <PhotoContainer key={id}>
