@@ -9,6 +9,8 @@ import NotFound from "./screens/NotFound";
 import SignUp from "./screens/SignUp";
 import routes from "./routes";
 import { HelmetProvider } from "react-helmet-async";
+import Header from "./components/Header";
+import Layout from "./components/Layout";
 
 const App = () => {
   const isLoggedIn = useReactiveVar(isLoggedInVar);
@@ -21,7 +23,13 @@ const App = () => {
           <Router>
             <Switch>
               <Route path={routes.home} exact>
-                {isLoggedIn ? <Home /> : <Login />}
+                {isLoggedIn ? (
+                  <Layout>
+                    <Home />
+                  </Layout>
+                ) : (
+                  <Login />
+                )}
               </Route>
               {!isLoggedIn ? (
                 <Route path={routes.signUp}>
