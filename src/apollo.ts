@@ -1,7 +1,28 @@
-import { ApolloClient, InMemoryCache, makeVar } from "@apollo/client";
+import {
+  ApolloClient,
+  createHttpLink,
+  InMemoryCache,
+  makeVar,
+} from "@apollo/client";
+import { setContext } from "@apollo/client/link/context";
+
+const httpLink = createHttpLink({
+  uri: "http://localhost:4000/graphql",
+});
+
+const authLink = setContext((_, { headers }) => {
+  console.log("TOKEN", localStorage.getItem(TOKEN));
+  return {
+    headers: {
+      ...headers,
+      token: localStorage.getItem(TOKEN),
+    },
+  };
+});
 
 export const client = new ApolloClient({
-  uri: "http://localhost:4000/graphql",
+  // * link는 Apollo클라이언트가 데이터 소스와 소통하는 방식이다
+  link: authLink.concat(httpLink),
   cache: new InMemoryCache(),
 });
 
