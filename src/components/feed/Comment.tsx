@@ -1,8 +1,17 @@
+import { gql, useMutation } from "@apollo/client";
 import React from "react";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import { FatText } from "../shared";
+
+const DELETE_COMMENT_MUTATION = gql`
+  mutation deleteComment($id: Int!) {
+    deleteComment(id: $id) {
+      ok
+    }
+  }
+`;
 
 const CommentContainer = styled.div`
   margin-bottom: 7px;
@@ -19,7 +28,34 @@ const CommentCaption = styled.span`
   }
 `;
 
-function Comment({ author, payload }) {
+function Comment({ id, photoId, isMine, author, payload }) {
+  const updateDeleteComment = (cache, result) => {
+    const {
+      data: {
+        deleteComment: { ok },
+      },
+    } = result;
+    if (ok) {
+      cache.evict({ id: `Comment:${id}` });
+      cache.modify({
+        id: `Photo:${photoId}`,
+        fields: {
+          commentNumber(prev) {
+            return prev - 1;
+          },
+        },
+      });
+    }
+  };
+  const [deleteCommentMutation] = useMutation(DELETE_COMMENT_MUTATION, {
+    variables: {
+      id,
+    },
+    update: updateDeleteComment,
+  });
+  const onDeleteClick = () => {
+    deleteCommentMutation();
+  };
   return (
     <CommentContainer>
       <FatText>{author}</FatText>
@@ -34,13 +70,17 @@ function Comment({ author, payload }) {
           )
         )}
       </CommentCaption>
+      {isMine ? <button onClick={onDeleteClick}>❌</button> : null}
     </CommentContainer>
   );
 }
 
 Comment.propTypes = {
+  id: PropTypes.number,
+  photoId: PropTypes.number,
   author: PropTypes.string.isRequired,
   payload: PropTypes.string.isRequired,
+  isMine: PropTypes.bool,
 };
 
 export default Comment;
