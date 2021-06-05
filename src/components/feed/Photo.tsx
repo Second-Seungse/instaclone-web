@@ -9,7 +9,8 @@ import { faHeart as SolidHeart } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import styled from "styled-components";
 import { seeFeed_seeFeed } from "../../__generated__/seeFeed";
-import { toggleLike_toggleLike } from "../../__generated__/toggleLike";
+import { Link } from "react-router-dom";
+import { toggleLike } from "../../__generated__/toggleLike";
 import Avatar from "../Avatar";
 import { FatText } from "../shared";
 import Comments from "./Comments";
@@ -74,14 +75,15 @@ const Likes = styled(FatText)`
 `;
 
 interface IFeedPhoto extends seeFeed_seeFeed {}
-interface IMutationResponse extends toggleLike_toggleLike {}
+interface IMutationResponse extends toggleLike {}
 
 const Photo = (photo: IFeedPhoto) => {
   const updateToggleLike = (
     cache: ApolloCache<IMutationResponse>,
     result: FetchResult<IMutationResponse>
   ) => {
-    const { ok } = result.data;
+    const { ok } = result.data.toggleLike;
+    console.log(result);
     if (ok) {
       const photoId = `Photo:${photo.id}`;
       cache.modify({
@@ -110,8 +112,12 @@ const Photo = (photo: IFeedPhoto) => {
   return (
     <PhotoContainer key={photo.id}>
       <PhotoHeader>
-        <Avatar lg url={photo.user.avatar} />
-        <Username>{photo.user.username}</Username>
+        <Link to={`/users/${photo.user.username}`}>
+          <Avatar lg url={photo.user.avatar} />
+        </Link>
+        <Link to={`/users/${photo.user.username}`}>
+          <Username>{photo.user.username}</Username>
+        </Link>
       </PhotoHeader>
       <PhotoFile src={photo.file} />
       <PhotoData>

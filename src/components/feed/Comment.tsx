@@ -3,7 +3,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { FatText } from "../shared";
-import { deleteComment_deleteComment } from "../../__generated__/deleteComment";
+import { deleteComment } from "../../__generated__/deleteComment";
 
 const DELETE_COMMENT_MUTATION = gql`
   mutation deleteComment($id: Int!) {
@@ -29,21 +29,20 @@ const CommentCaption = styled.span`
 `;
 
 interface IComment {
-  id? : number;
+  id?: number;
   photoId?: number;
   author: string;
   payload: string;
   isMine?: boolean;
 }
-interface IMutationResponse extends deleteComment_deleteComment {}
+interface IMutationResponse extends deleteComment {}
 
 const Comment = ({ id, photoId, isMine, author, payload }: IComment) => {
-  console.log(id, photoId, isMine, author, payload);
   const updateDeleteComment = (
     cache: ApolloCache<IMutationResponse>,
     result: FetchResult<IMutationResponse>
   ) => {
-    const { ok } = result.data;
+    const { ok } = result.data.deleteComment;
     if (ok) {
       cache.evict({ id: `Comment:${id}` });
       cache.modify({
@@ -67,7 +66,9 @@ const Comment = ({ id, photoId, isMine, author, payload }: IComment) => {
   };
   return (
     <CommentContainer>
-      <FatText>{author}</FatText>
+      <Link to={`/users/${author}`}>
+        <FatText>{author}</FatText>
+      </Link>
       <CommentCaption>
         {payload.split(" ").map((word, index) =>
           /#[\w]+/.test(word) ? (

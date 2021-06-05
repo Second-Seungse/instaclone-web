@@ -5,8 +5,8 @@ import { ApolloCache, FetchResult, gql, useMutation } from "@apollo/client";
 import useUser from "../../hooks/useUser";
 import { seeFeed_seeFeed } from "../../__generated__/seeFeed";
 import {
+  createComment,
   createCommentVariables,
-  createComment_createComment,
 } from "../../__generated__/createComment";
 
 const CREATE_COMMENT_MUTATION = gql`
@@ -44,7 +44,7 @@ const PostCommentInput = styled.input`
 
 interface IPhotoComments extends seeFeed_seeFeed {}
 interface ICommentForm extends createCommentVariables {}
-interface IMutationResponse extends createComment_createComment {}
+interface IMutationResponse extends createComment {}
 
 const Comments = (photo: IPhotoComments) => {
   const { data: userData } = useUser();
@@ -57,7 +57,7 @@ const Comments = (photo: IPhotoComments) => {
   ) => {
     const { payload } = getValues();
     setValue("payload", "");
-    const { ok, id } = result.data;
+    const { ok, id } = result.data.createComment;
 
     if (ok && userData?.me) {
       const newComment = {
