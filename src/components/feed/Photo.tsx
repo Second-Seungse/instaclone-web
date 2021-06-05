@@ -1,4 +1,4 @@
-import { gql, useMutation } from "@apollo/client";
+import { ApolloCache, FetchResult, gql, useMutation } from "@apollo/client";
 import {
   faBookmark,
   faComment,
@@ -7,8 +7,9 @@ import {
 } from "@fortawesome/free-regular-svg-icons";
 import { faHeart as SolidHeart } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import PropTypes from "prop-types";
-import styled, { ThemeProviderComponent } from "styled-components";
+import styled from "styled-components";
+import { seeFeed_seeFeed } from "../../__generated__/seeFeed";
+import { toggleLike_toggleLike } from "../../__generated__/toggleLike";
 import Avatar from "../Avatar";
 import { FatText } from "../shared";
 import Comments from "./Comments";
@@ -72,24 +73,17 @@ const Likes = styled(FatText)`
   display: block;
 `;
 
-const Photo = ({
-  id,
-  user,
-  file,
-  isLiked,
-  likes,
-  caption,
-  commentNumber,
-  comments,
-}) => {
-  const updateToggleLike = (cache, result) => {
-    const {
-      data: {
-        toggleLike: { ok },
-      },
-    } = result;
+interface IFeedPhoto extends seeFeed_seeFeed {}
+interface IMutationResponse extends toggleLike_toggleLike {}
+
+const Photo = (photo: IFeedPhoto) => {
+  const updateToggleLike = (
+    cache: ApolloCache<IMutationResponse>,
+    result: FetchResult<IMutationResponse>
+  ) => {
+    const { ok } = result.data;
     if (ok) {
-      const photoId = `Photo:${id}`;
+      const photoId = `Photo:${photo.id}`;
       cache.modify({
         id: photoId,
         fields: {
@@ -98,7 +92,7 @@ const Photo = ({
             return !prev;
           },
           likes(prev) {
-            if (isLiked) {
+            if (photo.isLiked) {
               return prev - 1;
             }
             return prev + 1;
@@ -109,24 +103,24 @@ const Photo = ({
   };
   const [toggleLikeMutation] = useMutation(TOGGLE_LIKE_MUTATION, {
     variables: {
-      id,
+      id: photo.id,
     },
     update: updateToggleLike,
   });
   return (
-    <PhotoContainer key={id}>
+    <PhotoContainer key={photo.id}>
       <PhotoHeader>
-        <Avatar lg url={user.avatar} />
-        <Username>{user.username}</Username>
+        <Avatar lg url={photo.user.avatar} />
+        <Username>{photo.user.username}</Username>
       </PhotoHeader>
-      <PhotoFile src={file} />
+      <PhotoFile src={photo.file} />
       <PhotoData>
         <PhotoActions>
           <div>
             <PhotoAction onClick={toggleLikeMutation}>
               <FontAwesomeIcon
-                style={{ color: isLiked ? "tomato" : "inherit" }}
-                icon={isLiked ? SolidHeart : faHeart}
+                style={{ color: photo.isLiked ? "tomato" : "inherit" }}
+                icon={photo.isLiked ? SolidHeart : faHeart}
               />
             </PhotoAction>
             <PhotoAction>
@@ -142,30 +136,11 @@ const Photo = ({
             </PhotoAction>
           </div>
         </PhotoActions>
-        <Likes>{likes === 1 ? "1 like" : `${likes} likes`}</Likes>
-        <Comments
-          photoId={id}
-          author={user.username}
-          caption={caption}
-          commentNumber={commentNumber}
-          comments={comments}
-        />
+        <Likes>{photo.likes === 1 ? "1 like" : `${photo.likes} likes`}</Likes>
+        <Comments {...photo} />
       </PhotoData>
     </PhotoContainer>
   );
 };
-
-// TODO 타입스크립트를 사용한다면 이런것들을 할 필요가 없겠지?
-Photo.propTypes = {
-  id: PropTypes.number.isRequired,
-  user: PropTypes.shape({
-    avatar: PropTypes.string,
-    username: PropTypes.string.isRequired,
-  }),
-  caption: PropTypes.string,
-  file: PropTypes.string.isRequired,
-  isLiked: PropTypes.bool.isRequired,
-  likes: PropTypes.number.isRequired,
-  commentNumber: PropTypes.number.isRequired,
-};
+//{...photo}
 export default Photo;

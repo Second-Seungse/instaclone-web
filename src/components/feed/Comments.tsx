@@ -1,9 +1,13 @@
-import PropTypes from "prop-types";
 import { useForm } from "react-hook-form";
 import styled from "styled-components";
 import Comment from "./Comment";
-import { gql, useMutation } from "@apollo/client";
+import { ApolloCache, FetchResult, gql, useMutation } from "@apollo/client";
 import useUser from "../../hooks/useUser";
+import { seeFeed_seeFeed } from "../../__generated__/seeFeed";
+import {
+  createCommentVariables,
+  createComment_createComment,
+} from "../../__generated__/createComment";
 
 const CREATE_COMMENT_MUTATION = gql`
   mutation createComment($photoId: Int!, $payload: String!) {
@@ -25,14 +29,12 @@ const CommentCount = styled.span`
   font-weight: 600;
   font-size: 10px;
 `;
-
 const PostCommentContainer = styled.div`
   margin-top: 10px;
   padding-top: 15px;
   padding-bottom: 10px;
   border-top: 1px solid ${(props) => props.theme.borderColor};
 `;
-
 const PostCommentInput = styled.input`
   width: 100%;
   &::placeholder {
@@ -40,17 +42,23 @@ const PostCommentInput = styled.input`
   }
 `;
 
-function Comments({ photoId, author, caption, commentNumber, comments }) {
+interface IPhotoComments extends seeFeed_seeFeed {}
+interface ICommentForm extends createCommentVariables {}
+interface IMutationResponse extends createComment_createComment {}
+
+const Comments = (photo: IPhotoComments) => {
   const { data: userData } = useUser();
-  const { register, handleSubmit, setValue, getValues } = useForm();
-  const createCommentUpdate = (cache, result) => {
+  const { register, handleSubmit, setValue, getValues } =
+    useForm<ICommentForm>();
+
+  const createCommentUpdate = (
+    cache: ApolloCache<IMutationResponse>,
+    result: FetchResult<IMutationResponse>
+  ) => {
     const { payload } = getValues();
     setValue("payload", "");
-    const {
-      data: {
-        createComment: { ok, id },
-      },
-    } = result;
+    const { ok, id } = result.data;
+
     if (ok && userData?.me) {
       const newComment = {
         __typename: "Comment",
@@ -78,7 +86,7 @@ function Comments({ photoId, author, caption, commentNumber, comments }) {
         `,
       });
       cache.modify({
-        id: `Photo:${photoId}`,
+        id: `Photo:${photo.id}`,
         fields: {
           comments(prev) {
             return [...prev, newCacheComment];
@@ -104,22 +112,24 @@ function Comments({ photoId, author, caption, commentNumber, comments }) {
     }
     createCommentMutation({
       variables: {
-        photoId,
+        photoId: photo.id,
         payload,
       },
     });
   };
   return (
     <CommentsContainer>
-      <Comment author={author} payload={caption} />
+      <Comment author={photo.user.username} payload={photo.caption} />
       <CommentCount>
-        {commentNumber === 1 ? "1 comment" : `${commentNumber} comments`}
+        {photo.commentNumber === 1
+          ? "1 comment"
+          : `${photo.commentNumber} comments`}
       </CommentCount>
-      {comments?.map((comment) => (
+      {photo.comments?.map((comment) => (
         <Comment
           key={comment.id}
-          id={comment.id}
-          photoId={photoId}
+          id = {comment.id}
+          photoId={photo.id}
           author={comment.user.username}
           payload={comment.payload}
           isMine={comment.isMine}
@@ -137,25 +147,6 @@ function Comments({ photoId, author, caption, commentNumber, comments }) {
       </PostCommentContainer>
     </CommentsContainer>
   );
-}
-
-Comments.propTypes = {
-  photoId: PropTypes.number.isRequired,
-  author: PropTypes.string.isRequired,
-  caption: PropTypes.string,
-  commentNumber: PropTypes.number.isRequired,
-  comments: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.number.isRequired,
-      user: PropTypes.shape({
-        avatar: PropTypes.string,
-        username: PropTypes.string.isRequired,
-      }),
-      payload: PropTypes.string.isRequired,
-      isMine: PropTypes.bool.isRequired,
-      createdAt: PropTypes.string.isRequired,
-    })
-  ),
 };
 
 export default Comments;

@@ -5,6 +5,6 @@
 - [x] Arch.
 - [x] Styles
 - [x] Log In / Sign Up / Dark Mode
-- [ ] Feed
+- [x] Feed
 - [ ] Profile
 - [ ] See Hashtag

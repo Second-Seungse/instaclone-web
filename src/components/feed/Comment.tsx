@@ -1,9 +1,9 @@
-import { gql, useMutation } from "@apollo/client";
+import { ApolloCache, FetchResult, gql, useMutation } from "@apollo/client";
 import React from "react";
 import { Link } from "react-router-dom";
-import PropTypes from "prop-types";
 import styled from "styled-components";
 import { FatText } from "../shared";
+import { deleteComment_deleteComment } from "../../__generated__/deleteComment";
 
 const DELETE_COMMENT_MUTATION = gql`
   mutation deleteComment($id: Int!) {
@@ -28,13 +28,22 @@ const CommentCaption = styled.span`
   }
 `;
 
-function Comment({ id, photoId, isMine, author, payload }) {
-  const updateDeleteComment = (cache, result) => {
-    const {
-      data: {
-        deleteComment: { ok },
-      },
-    } = result;
+interface IComment {
+  id? : number;
+  photoId?: number;
+  author: string;
+  payload: string;
+  isMine?: boolean;
+}
+interface IMutationResponse extends deleteComment_deleteComment {}
+
+const Comment = ({ id, photoId, isMine, author, payload }: IComment) => {
+  console.log(id, photoId, isMine, author, payload);
+  const updateDeleteComment = (
+    cache: ApolloCache<IMutationResponse>,
+    result: FetchResult<IMutationResponse>
+  ) => {
+    const { ok } = result.data;
     if (ok) {
       cache.evict({ id: `Comment:${id}` });
       cache.modify({
@@ -73,14 +82,6 @@ function Comment({ id, photoId, isMine, author, payload }) {
       {isMine ? <button onClick={onDeleteClick}>❌</button> : null}
     </CommentContainer>
   );
-}
-
-Comment.propTypes = {
-  id: PropTypes.number,
-  photoId: PropTypes.number,
-  author: PropTypes.string.isRequired,
-  payload: PropTypes.string.isRequired,
-  isMine: PropTypes.bool,
 };
 
 export default Comment;
