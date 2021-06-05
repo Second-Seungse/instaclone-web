@@ -89,28 +89,22 @@ const Photo = ({
       },
     } = result;
     if (ok) {
-      const fragmentId = `Photo:${id}`;
-      const fragment = gql`
-        fragment BSName on Photo {
-          isLiked
-          likes
-        }
-      `;
-      const result = cache.readFragment({
-        id: fragmentId,
-        fragment,
-      });
-      if ("isLiked" in result && "likes" in result) {
-        const { isLiked: cacheIsLiked, likes: cacheLikes } = result;
-        cache.writeFragment({
-          id: fragmentId,
-          fragment,
-          data: {
-            isLiked: !cacheIsLiked,
-            likes: cacheIsLiked ? cacheLikes - 1 : cacheLikes + 1,
+      const photoId = `Photo:${id}`;
+      cache.modify({
+        id: photoId,
+        fields: {
+          // * prev에서는 이전 isLiked값을 쓸 수 있다
+          isLiked(prev) {
+            return !prev;
           },
-        });
-      }
+          likes(prev) {
+            if (isLiked) {
+              return prev - 1;
+            }
+            return prev + 1;
+          },
+        },
+      });
     }
   };
   const [toggleLikeMutation] = useMutation(TOGGLE_LIKE_MUTATION, {
