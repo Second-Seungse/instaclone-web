@@ -6,5 +6,5 @@
 - [x] Styles
 - [x] Log In / Sign Up / Dark Mode
 - [x] Feed
-- [ ] Profile
-- [ ] See Hashtag
+- [x] See Hashtag
+- [x] Profile

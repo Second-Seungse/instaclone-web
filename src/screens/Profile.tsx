@@ -125,7 +125,7 @@ const ProfileBtn = styled(Button)`
   cursor: pointer;
 `;
 
-function Profile() {
+const Profile = () => {
   const { username }: any = useParams();
   const { data: userData } = useUser();
   const client = useApolloClient();
