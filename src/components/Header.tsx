@@ -5,7 +5,7 @@ import { faHome } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-import { isLoggedInVar } from "../apollo";
+import { isLoggedInVar, logUserOut } from "../apollo";
 import useUser from "../hooks/useUser";
 import routes from "../routes";
 import Avatar from "./Avatar";
@@ -65,7 +65,9 @@ const Header = () => {
                 </Link>
               </Icon>
               <Icon>
-                <FontAwesomeIcon icon={faCompass} size="lg" />
+                <Link to={routes.home}>
+                  <FontAwesomeIcon icon={faCompass} size="lg" />
+                </Link>
               </Icon>
               <Icon>
                 <Link to={`/users/${data?.me?.username}`}>
