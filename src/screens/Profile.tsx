@@ -1,4 +1,4 @@
-import { gql, useQuery } from "@apollo/client";
+import { gql, useMutation, useQuery } from "@apollo/client";
 import { useParams } from "react-router-dom";
 import { PHOTO_FRAGMENT } from "../fragments";
 import { faHeart, faComment } from "@fortawesome/free-solid-svg-icons";
@@ -7,6 +7,7 @@ import styled from "styled-components";
 import { FatText } from "../components/shared";
 import Button from "../components/auth/Button";
 import PageTitle from "../components/PageTitle";
+import useUser from "../hooks/useUser";
 
 const FOLLOW_USER_MUTATION = gql`
   mutation followUser($username: String!) {
@@ -117,17 +118,27 @@ const Icon = styled.span`
     margin-right: 5px;
   }
 `;
-// ?  Button(input) 컴포넌트의 속성만을 상속하여 새로운 Button(span)컴포넌트 생성
-const ProfileBtn = styled(Button).attrs({
-  as: "span",
-})`
+// ? .attr()로 Button(input) 컴포넌트의 속성만을 상속하여 새로운 Button(span)컴포넌트 생성
+const ProfileBtn = styled(Button)`
   margin-left: 10px;
   margin-top: 0px;
+  cursor: pointer;
 `;
 
 function Profile() {
   const { username }: any = useParams();
+  const { data: userData } = useUser();
   const { data, loading } = useQuery(SEE_PROFILE_QUERY, {
+    variables: {
+      username,
+    },
+  });
+  const [unfollowUser] = useMutation(UNFOLLOW_USER_MUTATION, {
+    variables: {
+      username,
+    },
+  });
+  const [followUser] = useMutation(FOLLOW_USER_MUTATION, {
     variables: {
       username,
     },
@@ -135,12 +146,12 @@ function Profile() {
   const getButton = (seeProfile) => {
     const { isMe, isFollowing } = seeProfile;
     if (isMe) {
-      return <ProfileBtn>Edit Profile</ProfileBtn>;
+      return <ProfileBtn value="Edit Profile" />;
     }
     if (isFollowing) {
-      return <ProfileBtn>Unfollow</ProfileBtn>;
+      return <ProfileBtn onClick={unfollowUser} value="Unfollow" />;
     } else {
-      return <ProfileBtn>Follow</ProfileBtn>;
+      return <ProfileBtn onClick={followUser} value="Follow" />;
     }
   };
   return (
