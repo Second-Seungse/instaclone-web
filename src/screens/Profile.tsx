@@ -1,4 +1,4 @@
-import { gql, useApolloClient,useMutation, useQuery } from "@apollo/client";
+import { gql, useApolloClient, useMutation, useQuery } from "@apollo/client";
 import { useParams } from "react-router-dom";
 import { PHOTO_FRAGMENT } from "../fragments";
 import { faHeart, faComment } from "@fortawesome/free-solid-svg-icons";
@@ -154,6 +154,15 @@ function Profile() {
         },
       },
     });
+    const { me } = userData;
+    cache.modify({
+      id: `User:${me.username}`,
+      fields: {
+        totalFollowing(prev) {
+          return prev - 1;
+        },
+      },
+    });
   };
   const [unfollowUser] = useMutation(UNFOLLOW_USER_MUTATION, {
     variables: {
@@ -176,6 +185,15 @@ function Profile() {
           return true;
         },
         totalFollowers(prev) {
+          return prev + 1;
+        },
+      },
+    });
+    const { me } = userData;
+    cache.modify({
+      id: `User:${me.username}`,
+      fields: {
+        totalFollowing(prev) {
           return prev + 1;
         },
       },
