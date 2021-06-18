@@ -5,7 +5,7 @@ import { faHome } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-import { isLoggedInVar, logUserOut } from "../apollo";
+import { isLoggedInVar } from "../apollo";
 import useUser from "../hooks/useUser";
 import routes from "../routes";
 import Avatar from "./Avatar";

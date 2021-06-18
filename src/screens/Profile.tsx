@@ -129,7 +129,7 @@ const Profile = () => {
   const { username }: any = useParams();
   const { data: userData } = useUser();
   const client = useApolloClient();
-  const { data, loading } = useQuery(SEE_PROFILE_QUERY, {
+  const { data /* loading */ } = useQuery(SEE_PROFILE_QUERY, {
     variables: {
       username,
     },

@@ -1,11 +1,10 @@
-import { type } from "os";
 import styled from "styled-components";
 
-interface SAvatar {
+interface ISAvatar {
   lg: boolean
 }
 
-const SAvatar = styled.div<SAvatar>`
+const SAvatar = styled.div<ISAvatar>`
   width: ${(props) => (props.lg ? "30px" : "25px")};
   height: ${(props) => (props.lg ? "30px" : "25px")};
   border-radius: 50%;
