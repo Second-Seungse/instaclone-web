@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import styled from "styled-components";
 import { FatText } from "../components/shared";
 import Button from "../components/auth/Button";
-import PageTitle from "../components/PageTitle";
+/* import PageTitle from "../components/PageTitle"; */
 import useUser from "../hooks/useUser";
 
 const FOLLOW_USER_MUTATION = gql`
@@ -218,11 +218,11 @@ const Profile = () => {
   };
   return (
     <div>
-      <PageTitle
+      {/* <PageTitle
         title={
           loading ? "Loading..." : `${data?.seeProfile?.username}'s Profile`
         }
-      />
+      /> */}
       <Header>
         <Avatar src={data?.seeProfile?.avatar} />
         <Column>
