@@ -15,6 +15,7 @@ import FormBox from "../components/auth/FormBox";
 import FormError from "../components/auth/FormError";
 import Input from "../components/auth/Input";
 import Separator from "../components/auth/Separator";
+import PageTitle from "../components/PageTitle";
 import routes from "../routes";
 import { login, loginVariables } from "../__generated__/login";
 
@@ -100,6 +101,7 @@ const Login = () => {
 
   return (
     <AuthLayout>
+      <PageTitle title="Login" />
       <FormBox>
         <div>
           <FontAwesomeIcon icon={faInstagram} size="3x" />
